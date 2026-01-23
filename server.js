@@ -1,59 +1,86 @@
-// server.js
 import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import authRoutes from './routes/auth/index.js';
+// import cors from 'cors';
+import { config } from './config/config.js';
+import { connectDB } from './config/database.js';
+import {
+  securityMiddleware,
+  configureCors,
+  limiter,
+  requestLogger,
+  responseTime,
+} from './middleware/security.middleware.js';
+import { errorHandler, notFound } from './middleware/error.middleware.js';
+import cookieParser from 'cookie-parser';
+import compression from 'compression';
 
+// Import routes
+import authRoutes from './routes/auth.routes.js';
+import investmentRoutes from './routes/investment.routes.js';
+import serviceRoutes from './routes/service.routes.js';
+import contactRoutes from './routes/contact.routes.js';
 
-dotenv.config();
-
+// Initialize Express app
 const app = express();
-const port = process.env.PORT || 3000;
 
-// =============================================
-// MIDDLEWARE
-// =============================================
+// Connect to MongoDB
+connectDB();
+
+// Apply middleware
+
 app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
+app.use(compression());
+app.use(configureCors);
+app.use(requestLogger);
+app.use(responseTime);
 
-// Allow requests from ANY domain (very permissive - good only for development)
-app.use(cors({
-  origin: true,                    // ← reflects the requesting origin (allows all)
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Apply security middleware
+securityMiddleware.forEach(middleware => app.use(middleware));
 
-// Some people prefer this even more permissive variant:
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');          // ← allows literally everyone
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  
-  next();
-});
+// Apply rate limiting to API routes
+app.use('/api/', limiter);
 
-// =============================================
-// ROUTES
-// =============================================
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/investments', investmentRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/contact', contactRoutes);
+
+// Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.status(200).json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
 });
 
-app.use('/auth', authRoutes);
-app.use('/api', authRoutes);  // optional
+// 404 handler
+app.use(notFound);
 
-// =============================================
-// START SERVER
-// =============================================
-app.listen(port, () => {
-  console.log(`╔═══════════════════════════════════════╗`);
-  console.log(`║ Server running on port ${port}         ║`);
-  console.log(`║ Environment: ${process.env.NODE_ENV || 'development'} ║`);
-  console.log(`╚═══════════════════════════════════════╝`);
+// Error handler
+app.use(errorHandler);
+
+// Start server
+const PORT = config.port;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running in ${config.nodeEnv} mode on port ${PORT}`);
+  console.log(`📡 API URL: ${config.baseUrl}`);
+  console.log(`🌐 Frontend URL: ${config.frontendUrl}`);
 });
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('👋 SIGTERM signal received: closing HTTP server');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('👋 SIGINT signal received: closing HTTP server');
+  process.exit(0);
+});
+
+export default app;
