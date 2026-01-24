@@ -1,10 +1,10 @@
-import { res, Response, NextFunction } from 'express';
+
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
 // import hpp from 'hpp';
-import { config } from '../config/config';
+import { config } from '../config/config.js';
 
 // CORS configuration
 export const configureCors = cors({
@@ -55,21 +55,13 @@ export const securityMiddleware = [
 ];
 
 // Request logging middleware
-export const requestLogger = (
-  req,
-  res,
-  next
-) => {
+export const requestLogger = (req, res, next) => {
   console.log(`${req.method} ${req.path} - ${new Date().toISOString()}`);
   next();
 };
 
 // Response time middleware
-export const responseTime = (
-  req,
-  res,
-  next
-)=> {
+export const responseTime = (req, res, next) => {
   const start = Date.now();
   
   res.on('finish', () => {

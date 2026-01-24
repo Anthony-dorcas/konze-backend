@@ -8,7 +8,6 @@ export const errorHandler = (err, req, res, next) => {
   if (config.nodeEnv === 'development') {
     console.error('❌ Error:', {
       message: err.message,
-      stack: err.stack,
       path: req.path,
       method: req.method,
     });
@@ -53,7 +52,7 @@ export const errorHandler = (err, req, res, next) => {
   res.status(error.statusCode || 500).json({
     success: false,
     error: error.message || 'Server Error',
-    stack: config.nodeEnv === 'development' ? err.stack : undefined,
+   
   });
 };
 

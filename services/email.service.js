@@ -5,14 +5,26 @@ class EmailService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: config.smtp.host,
-      port: config.smtp.port,
-      secure: config.smtp.port === 465,
+      service: 'gmail',  
       auth: {
-        user: config.smtp.user,
-        pass: config.smtp.pass,
+        user: config.smtp.auth.user,
+        pass: config.smtp.auth.pass,
       },
     });
+  this.verifyConnection();
+  }
+
+  async verifyConnection() {
+    try {
+      await this.transporter.verify();
+      console.log('✅ Email server is ready to send messages');
+    } catch (error) {
+      console.error('❌ Email connection failed:', error.message);
+      console.log('💡 Make sure:');
+      console.log('1. You generated an App Password (not your regular password)');
+      console.log('2. Less secure apps access is enabled (if not using 2FA)');
+      console.log('3. The App Password is correct (16 characters, no spaces)');
+    }
   }
 
   async sendEmail(to, subject, html) {

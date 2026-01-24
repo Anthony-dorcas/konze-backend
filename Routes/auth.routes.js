@@ -24,8 +24,8 @@ const router = express.Router();
 
 router.post(
   '/register',
-  // validateRegister,
-  // handleValidationErrors,
+  validateRegister,
+  handleValidationErrors,
   register
 );
 

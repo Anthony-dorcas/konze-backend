@@ -29,15 +29,15 @@ const UserSchema = new Schema(
       minlength: [8, 'Password must be at least 8 characters'],
       select: false,
     },
-    // referralCode: {
-    //   type: String,
-    //   unique: true,
-    //   sparse: true,
-    // },
-    // referredBy: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: 'User',
-    // },
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    referredBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
     isVerified: {
       type: Boolean,
       default: false,

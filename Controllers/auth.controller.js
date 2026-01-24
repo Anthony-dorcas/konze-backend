@@ -33,7 +33,7 @@ export const register = asyncHandler(async (req, res) => {
     email,
     phone,
     password,
-    // referredBy,
+    referredBy,
   });
 
   // Generate verification code

@@ -38,13 +38,14 @@ export const config = {
   jwtCookieExpire: parseInt(process.env.JWT_COOKIE_EXPIRE || '7', 10),
   
   // Email
-  smtp: {
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
+smtp: {
+  service: 'gmail',  
+  auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-  emailFrom: process.env.EMAIL_FROM || 'noreply@konze.com',
+},
+emailFrom: process.env.EMAIL_FROM || '"Konze Concept" <konzegroup1@gmail.com>',
   
   // Cloudinary
   cloudinary: {

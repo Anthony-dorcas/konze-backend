@@ -67,19 +67,18 @@ app.use(errorHandler);
 // Start server
 const PORT = config.port;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${config.nodeEnv} mode on port ${PORT}`);
-  console.log(`📡 API URL: ${config.baseUrl}`);
-  console.log(`🌐 Frontend URL: ${config.frontendUrl}`);
+  console.log(`Server running in ${config.nodeEnv} mode on port ${PORT}`);
+
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('👋 SIGTERM signal received: closing HTTP server');
+
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('👋 SIGINT signal received: closing HTTP server');
+
   process.exit(0);
 });
 
