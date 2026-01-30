@@ -14,10 +14,10 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 
 // Import routes
-import authRoutes from './routes/auth.routes.js';
-import investmentRoutes from './routes/investment.routes.js';
-import serviceRoutes from './routes/service.routes.js';
-import contactRoutes from './routes/contact.routes.js';
+import authRoutes from './Routes/auth.routes.js';
+import investmentRoutes from './Routes/investment.routes.js';
+import serviceRoutes from './Routes/service.routes.js';
+import contactRoutes from './Routes/contact.routes.js';
 
 // Initialize Express app
 const app = express();
